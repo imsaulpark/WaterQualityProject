@@ -32,102 +32,23 @@ if(isset($_POST['DatapointDelete'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Bootstrap Example</title>
+  <title>Water Quality Project</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="overall.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <style>
-
-  th
-  {
-    text-align: center;
-  }
-
-  .td_btn
-  {
-    background-color: white;
-    border-top: 1px solid #ffffff !important;
-  }
-
-  .input
-  {
-    background: transparent;
-    border: none;
-    border-bottom: 1px dashed #83A4C5;
-    outline: none;
-    padding: 0px 0px 0px 0px;
-    text-align : center;
-    width:100px;
-  }
-
-  .edit
-  {
-    border:none;
-    width:100px;
-    border-top:0px;
-    background-color: inherit;
-    text-align: center;
-  }
-
-  .form-style{
-    padding: 20px;
-    padding-bottom: 0px;
-    margin: 10px auto;
-    margin-bottom: 50px;
-    background: #F5F5F5;
-    border-radius: 8px;
-    margin-top : 0px;
-  }
-
-  .h2-style{
-    background: #808080;
-    text-transform: uppercase;
-    font-family: 'Open Sans Condensed', sans-serif;
-    color: #FFFFFF;
-    font-size: 18px;
-    font-weight: 100;
-    margin: -20px;
-    padding:15px;
-    margin-bottom: 10px;
-  }
-
-  ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #333;
-  }
-
-  li {
-    float: left;
-  }
-
-  li a {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-  }
-
-  li a:hover {
-    background-color: #111;
-  }
-
-  .active {
-    background-color: #4CAF50;
-  }
-
-  </style>
 </head>
+<style>
+  th { text-align: center;}
+  ul { margin-bottom: 0;}
+  img{ width:250px; margin-top:-10px;}
+</style>
 <body>
   <br>
   <div class="container" style="text-align: center">
-    <h2>Water Quality Management</h2>
-    <p>This page is for water quality management.</p>
+  <img class="kwater" src="kwater.png" alt="kwater">
     <br>
     <div class="col-md-10 col-md-offset-1">
       <ul>

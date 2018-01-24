@@ -55,12 +55,52 @@
         }
     }
 
+    //해당 idstation이 존재하는지
+    public function stationExist($id)
+    {
+      try
+      {
+        $stmt = $this->db->prepare("SELECT * FROM station WHERE idstation=:id");
+        $stmt->bindparam(":id",$id);
+        $stmt->execute();
+
+        if($stmt->rowCount()==0)
+          return false;
+        else
+          return true;
+      }
+      catch(PDOException $e)
+      {
+        echo $e->getMessage();
+      }
+    }
+
+    //해당 idcriteria 존재하는지
+    public function criteriaExist($id)
+    {
+      try
+      {
+        $stmt = $this->db->prepare("SELECT * FROM criteria WHERE idcriteria=:id");
+        $stmt->bindparam(":id",$id);
+        $stmt->execute();
+
+        if($stmt->rowCount()==0)
+          return false;
+        else
+          return true;
+      }
+      catch(PDOException $e)
+      {
+        echo $e->getMessage();
+      }
+    }
+
     //하나의 entity 삽입
     public function add($id,$timestamp,$value,$flag,$idstation,$idcriteria)
     {
       try
       {
-        if(!$this->whetherExist($id))
+        if(!$this->whetherExist($id) && $this->stationExist($idstation) && $this->criteriaExist($idcriteria))
         {
           $stmt = $this->db->prepare("ALTER TABLE datapoint AUTO_INCREMENT = 1");
           $stmt->execute();
@@ -68,7 +108,7 @@
           $stmt->execute(array(':id'=>$id,':timestamp'=>$timestamp,':value'=>$value,':flag'=>$flag,':idstation'=>$idstation,':idcriteria'=>$idcriteria));
         }
         else {
-          echo "<script>alert('중복된 ID가 존재합니다.');</script>";
+          echo "<script>alert('중복된 iddatapoint가 존재하거나 해당 idstation 또는 idcriteria가 존재하지 않습니다.');</script>";
         }
       }
       catch(PDOException $e)
@@ -82,7 +122,7 @@
     {
       try
       {
-        if(!$this->whetherExist($newId) || $prevId==$newId)
+        if((!$this->whetherExist($newId) || $prevId==$newId) && $this->stationExist($idstation) && $this->criteriaExist($idcriteria))
         {
           $stmt = $this->db->prepare("UPDATE datapoint SET iddatapoint=:iddatapoint, `timestamp`=:timestamp, value=:value, flag=b'".$flag."', idstation=:idstation, idcriteria=:idcriteria WHERE iddatapoint=:prevId");
           $stmt->bindparam(":iddatapoint",$newId);
@@ -94,7 +134,7 @@
           $stmt->execute();
         }
         else {
-          echo "<script>alert('중복된 ID가 존재합니다.');</script>";
+          echo "<script>alert('중복된 iddatapoint가 존재하거나 해당 idstation 또는 idcriteria가 존재하지 않습니다.');</script>";
         }
       }
       catch(PDOException $e)

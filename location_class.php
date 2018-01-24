@@ -13,6 +13,8 @@
       $this->db = $conn;
     }
 
+    public function nothing(){echo "GG";}
+
     //sql 부르는 함수
 	  public function runQuery($sql)
 		{
