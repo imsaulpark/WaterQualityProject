@@ -20,12 +20,6 @@
       text-align : center;
       width:100px;
     }
-    img
-    {
-        width:250px;
-        margin-top:-10px;
-    }
-
     .edit
     {
       border:none;
@@ -82,5 +76,5 @@
     }
 
     .active {
-    background-color: #4CAF50;
+    background-color: #1e4b91;
 }

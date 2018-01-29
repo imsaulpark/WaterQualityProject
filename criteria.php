@@ -1,22 +1,43 @@
       <?php
 
       require_once 'criteria_class.php';
-      $criteria = new Criteria();
+      $criteria = new Criteria("criteria");
 
       if(isset($_POST['CriteriaAdd'])) {
 
-        $criteria->add($_POST['idcriteria'],$_POST['value1'],$_POST['value2'],$_POST['description'],$_POST['unit']);
+        if($criteria->add($_POST['idcriteria'],$_POST['value1'],$_POST['value2'],$_POST['description'],$_POST['unit'])==false)
+        {
+          echo "<!DOCTYPE html>";
+          echo "<script>alert('중복된 idcriteria가 존재합니다.');</script>";
+        }
       }
 
 
       if(isset($_POST['CriteriaEdit'])) {
 
         $stmt = $criteria->getAll();
-        for($i=0;$i<$stmt->rowCount();$i++)
-        {
-          $row=$stmt->fetch(PDO::FETCH_ASSOC);
-          $row=array_values($row);
-          $criteria->edit($row[0],$_POST['entity'.$row[0]][0],$_POST['entity'.$row[0]][1],$_POST['entity'.$row[0]][2],$_POST['entity'.$row[0]][3],$_POST['entity'.$row[0]][4]);
+        $flag=0;
+        try{
+          $criteria->transactionStart();
+          for($i=0;$i<$stmt->rowCount();$i++)
+          {
+            $row=$stmt->fetch(PDO::FETCH_ASSOC);
+            $row=array_values($row);
+            if($criteria->edit($row[0],$_POST['entity'.$row[0]][0],$_POST['entity'.$row[0]][1],$_POST['entity'.$row[0]][2],$_POST['entity'.$row[0]][3],$_POST['entity'.$row[0]][4])==false)
+            {
+              echo "<!DOCTYPE html>";
+              echo "<script>alert('중복된 idcriteria가 존재합니다.');</script>";
+              $criteria->transactionFail();
+              $flag=1;
+              break;
+            }
+          }
+          if($flag==0)
+            $criteria->transactionSuccess();
+        }
+        catch (Exception $e) {
+          $criteria->transactionFail();
+          echo "Failed: " . $e->getMessage();
         }
       }
 

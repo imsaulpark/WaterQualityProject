@@ -1,22 +1,43 @@
 <?php
 
 require_once 'station_class.php';
-$station = new Station();
+$station = new Station("station");
 
 if(isset($_POST['StationAdd'])) {
 
-  $station->add($_POST['idstation'],$_POST['description'],$_POST['idlocation']);
+  if($station->add($_POST['idstation'],$_POST['description'],$_POST['idlocation'])==false)
+  {
+    echo "<!DOCTYPE html>";
+    echo "<script>alert('중복된 idstation이 존재하거나 해당 idlocation이 존재하지 않습니다.');</script>";
+  }
 }
 
 
 if(isset($_POST['StationEdit'])) {
 
   $stmt = $station->getAll();
-  for($i=0;$i<$stmt->rowCount();$i++)
-  {
-    $row=$stmt->fetch(PDO::FETCH_ASSOC);
-    $row=array_values($row);
-    $station->edit($row[0],$_POST['entity'.$row[0]][0],$_POST['entity'.$row[0]][1],$_POST['entity'.$row[0]][2]);
+  $flag=0;
+  try{
+    $station->transactionStart();
+    for($i=0;$i<$stmt->rowCount();$i++)
+    {
+      $row=$stmt->fetch(PDO::FETCH_ASSOC);
+      $row=array_values($row);
+      if($station->edit($row[0],$_POST['entity'.$row[0]][0],$_POST['entity'.$row[0]][1],$_POST['entity'.$row[0]][2])==false)
+      {
+        echo "<!DOCTYPE html>";
+        echo "<script>alert('중복된 idstation이 존재하거나 해당 idlocation이 존재하지 않습니다.');</script>";
+        $station->transactionFail();
+        $flag=1;
+        break;
+      }
+    }
+    if($flag==0)
+      $station->transactionSuccess();
+  }
+  catch (Exception $e) {
+    $station->transactionFail();
+    echo "Failed: " . $e->getMessage();
   }
 }
 

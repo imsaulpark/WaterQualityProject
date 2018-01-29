@@ -1,22 +1,46 @@
 <?php
 
 require_once 'datapoint_class.php';
-$datapoint = new Datapoint();
+$datapoint = new Datapoint("datapoint");
 
 if(isset($_POST['DatapointAdd'])) {
 
-  $datapoint->add($_POST['iddatapoint'],$_POST['timestamp'],$_POST['value'],$_POST['flag'],$_POST['idstation'],$_POST['idcriteria']);
+if($_POST['timestamp']==null)
+  $_POST['timestamp']=date('Y/m/d H:i:s');
+
+  if($datapoint->add($_POST['iddatapoint'],$_POST['timestamp'],$_POST['value'],$_POST['idstation'],$_POST['idcriteria'])==false)
+  {
+    echo "<!DOCTYPE html>";
+    echo "<script>alert('중복된 iddatapoint가 존재하거나 해당 idstation 또는 idcriteria가 존재하지 않습니다.');</script>";
+  }
 }
 
 
 if(isset($_POST['DatapointEdit'])) {
 
   $stmt = $datapoint->getAll();
-  for($i=0;$i<$stmt->rowCount();$i++)
-  {
-    $row=$stmt->fetch(PDO::FETCH_ASSOC);
-    $row=array_values($row);
-    $datapoint->edit($row[0],$_POST['entity'.$row[0]][0],$_POST['entity'.$row[0]][1],$_POST['entity'.$row[0]][2],$_POST['entity'.$row[0]][3],$_POST['entity'.$row[0]][4],$_POST['entity'.$row[0]][5]);
+  $flag=0;
+  try{
+    $datapoint->transactionStart();
+    for($i=0;$i<$stmt->rowCount();$i++)
+    {
+      $row=$stmt->fetch(PDO::FETCH_ASSOC);
+      $row=array_values($row);
+      if($datapoint->edit($row[0],$_POST['entity'.$row[0]][0],$_POST['entity'.$row[0]][1],$_POST['entity'.$row[0]][2],$_POST['entity'.$row[0]][4],$_POST['entity'.$row[0]][5])==false)
+      {
+        echo "<!DOCTYPE html>";
+        echo "<script>alert('중복된 iddatapoint가 존재하거나 해당 idstation 또는 idcriteria가 존재하지 않습니다.');</script>";
+        $datapoint->transactionFail();
+        $flag=1;
+        break;
+      }
+    }
+    if($flag==0)
+      $datapoint->transactionSuccess();
+  }
+  catch (Exception $e) {
+    $datapoint->transactionFail();
+    echo "Failed: " . $e->getMessage();
   }
 }
 
@@ -88,7 +112,7 @@ if(isset($_POST['DatapointDelete'])) {
                 echo "<td><input class='edit' type='number' max='99999999999' name='entity".$row[0]."[]' value=$row[0]></td>";
                 echo "<td><input style='width:230px' class='edit' type='datetime-local' name='entity".$row[0]."[]' value = ".date("Y-m-d\TH:i:s", strtotime($row[1]))."></td>";
                 echo "<td><input class='edit' type='number'  step='any' name='entity".$row[0]."[]' value=$row[2]></td>";
-                echo "<td><input class='edit' type='number' name='entity".$row[0]."[]' value=$row[3]></td>";
+                echo "<td><input class='edit' type='number' READONLY name='entity".$row[0]."[]' value=$row[3]></td>";
                 echo "<td><input class='edit' type='number' max='99999999999' name='entity".$row[0]."[]' value=$row[4]></td>";
                 echo "<td><input class='edit' type='number' max='99999999999' name='entity".$row[0]."[]' value=$row[5]></td>";
                 echo "</tr>";
@@ -106,7 +130,7 @@ if(isset($_POST['DatapointDelete'])) {
                   <input class='input' type='number' step='any' name='value'>
                 </td>
                 <td class=td_input>
-                  <input class='input' type='number' name='flag'>
+                  <input class='input' type='number' name='flag' READONLY>
                 </td>
                 <td class=td_input>
                   <input class='input' type='number' max='99999999999' name='idstation'>

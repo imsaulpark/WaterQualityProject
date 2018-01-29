@@ -1,21 +1,43 @@
 <?php
 
   require_once 'location_class.php';
-  $location = new Location();
+  $location = new Location("location");
 
     if(isset($_POST['LocationAdd'])) {
 
-      $location->add($_POST['idlocation'],$_POST['location1'],$_POST['location2'],$_POST['location3']);
+      if($location->add($_POST['idlocation'],$_POST['location1'],$_POST['location2'],$_POST['location3'])==false)
+      {
+        echo "<!DOCTYPE html>";
+        echo "<script>alert('중복된 idlocation이 존재합니다.');</script>";
+      }
+
     }
 
     if(isset($_POST['LocationEdit'])) {
 
       $stmt = $location->getAll();
-      for($i=0;$i<$stmt->rowCount();$i++)
-      {
-        $row=$stmt->fetch(PDO::FETCH_ASSOC);
-        $row=array_values($row);
-        $location->edit($row[0],$_POST['entity'.$row[0]][0],$_POST['entity'.$row[0]][1],$_POST['entity'.$row[0]][2],$_POST['entity'.$row[0]][3]);
+      $flag=0;
+      try{
+        $location->transactionStart();
+        for($i=0;$i<$stmt->rowCount();$i++)
+        {
+          $row=$stmt->fetch(PDO::FETCH_ASSOC);
+          $row=array_values($row);
+          if($location->edit($row[0],$_POST['entity'.$row[0]][0],$_POST['entity'.$row[0]][1],$_POST['entity'.$row[0]][2],$_POST['entity'.$row[0]][3])==false)
+          {
+            echo "<!DOCTYPE html>";
+            echo "<script>alert('중복된 idlocation이 존재합니다.');</script>";
+            $location->transactionFail();
+            $flag=1;
+            break;
+          }
+        }
+        if($flag==0)
+          $location->transactionSuccess();
+      }
+      catch (Exception $e) {
+        $location->transactionFail();
+        echo "Failed: " . $e->getMessage();
       }
     }
 
@@ -70,7 +92,6 @@
       </thead>
       <tbody>
         <?php
-
         $stmt = $location->getAll();
         $stmt->execute();
 
