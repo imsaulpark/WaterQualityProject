@@ -16,7 +16,7 @@
             echo "Connection error: " . $exception->getMessage();
         }
 
-	$stmt = $conn->prepare("SELECT * FROM location");
+	$stmt = $conn->prepare("SELECT * FROM criteria");
 	$stmt->execute();
 
 	$result = array();
@@ -25,7 +25,7 @@
 	{
 		$row=$stmt->fetch(PDO::FETCH_ASSOC);
 		array_push($result,
-			array('idlocation'=>$row['idlocation'], 'location1'=>$row['location1'], 'location2'=>$row['location2'], 'location3'=>$row['location3']
+			array('idcriteria'=>$row['idcriteria'], 'value1'=>$row['value1'], 'value2'=>$row['value2'], 'desc'=>$row['desc'],'unit'=>$row['unit']
 		));
 	}
 	echo json_encode(array("result"=>$result));

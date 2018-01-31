@@ -111,6 +111,21 @@
       }
     }
 
+    public function joinAll()
+    {
+      try
+      {
+        $stmt = $this->db->prepare("SELECT *, station.desc as station_desc, criteria.desc as criteria_desc FROM location JOIN station ON location.idlocation = station.idlocation JOIN datapoint ON datapoint.idstation = station.idstation JOIN criteria ON criteria.idcriteria= datapoint.idcriteria ORDER BY location.idlocation");
+        $stmt->execute();
+        return $stmt;
+      }
+      catch(PDOException $e)
+      {
+        echo $e->getMessage();
+      }
+
+    }
+
   }
 
  ?>

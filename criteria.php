@@ -5,7 +5,12 @@
 
       if(isset($_POST['CriteriaAdd'])) {
 
-        if($criteria->add($_POST['idcriteria'],$_POST['value1'],$_POST['value2'],$_POST['description'],$_POST['unit'])==false)
+        if($_POST['idcriteria']==null)
+        {
+          echo "<!DOCTYPE html>";
+          echo "<script>alert('idcriteria 입력하세요.');</script>";
+        }
+        else if($criteria->add($_POST['idcriteria'],$_POST['value1'],$_POST['value2'],$_POST['description'],$_POST['unit'])==false)
         {
           echo "<!DOCTYPE html>";
           echo "<script>alert('중복된 idcriteria가 존재합니다.');</script>";
@@ -23,7 +28,16 @@
           {
             $row=$stmt->fetch(PDO::FETCH_ASSOC);
             $row=array_values($row);
-            if($criteria->edit($row[0],$_POST['entity'.$row[0]][0],$_POST['entity'.$row[0]][1],$_POST['entity'.$row[0]][2],$_POST['entity'.$row[0]][3],$_POST['entity'.$row[0]][4])==false)
+            error_log($_POST['entity'.$row[0]][3]);
+            if($_POST['entity'.$row[0]][0]==null)
+            {
+              echo "<!DOCTYPE html>";
+              echo "<script>alert('idcriteria 입력하세요.');</script>";
+              $criteria->transactionFail();
+              $flag=1;
+              break;
+            }
+            else if($criteria->edit($row[0],$_POST['entity'.$row[0]][0],$_POST['entity'.$row[0]][1],$_POST['entity'.$row[0]][2],$_POST['entity'.$row[0]][3],$_POST['entity'.$row[0]][4])==false)
             {
               echo "<!DOCTYPE html>";
               echo "<script>alert('중복된 idcriteria가 존재합니다.');</script>";
@@ -53,7 +67,7 @@
       <!DOCTYPE html>
       <html lang="en">
       <head>
-        <title>Water Quality Project</title>
+        <title>K water Manger</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" type="text/css" href="overall.css">
@@ -69,7 +83,7 @@
         <body>
         <br>
         <div class="container" style="text-align: center">
-        <img class="kwater" src="kwater.png" alt="kwater">
+        <a  href="criteria.php"><img class="kwater" src="kwater.png" alt="kwater"></a>
         <br>
           <div class="col-md-10 col-md-offset-1">
             <ul>
@@ -77,6 +91,7 @@
               <li><a href="station.php">Station</a></li>
               <li><a href="datapoint.php">Datapoint</a></li>
               <li><a class="active" href="criteria.php">Criteria</a></li>
+              <li><a href="allcontents.php">All Contents</a></li>
             </ul>
             <form action="criteria.php" method="post" class="form-style">
               <h2 class="h2-style">CRITERIA</h2>
@@ -84,7 +99,7 @@
                 <table class="table table-striped" >
                   <thead>
                     <tr>
-                      <th></th>
+                      <th style="width:5%"></th>
                       <th>idcriteria</th>
                       <th>value1</th>
                       <th>value2</th>
@@ -104,18 +119,18 @@
                       $row=array_values($row);
                       echo "<tr>";
                       echo "<td><input type='checkbox' name='id[]' value=$row[0]></td>";
-                      echo "<td><input class='edit' type='number' max='99999999999' name='entity".$row[0]."[]' value=$row[0]></td>";
+                      echo "<td><input class='edit' type='text' maxlength='11' name='entity".$row[0]."[]' value=$row[0]></td>";
                       echo "<td><input class='edit' type='number' step='any' name='entity".$row[0]."[]' value=$row[1]></td>";
                       echo "<td><input class='edit' type='number' step='any' name='entity".$row[0]."[]' value=$row[2]></td>";
-                      echo "<td><input class='edit' type='text' maxlength='45' name='entity".$row[0]."[]' value=$row[3]></td>";
-                      echo "<td><input class='edit' type='text' maxlength='10' name='entity".$row[0]."[]' value=$row[4]></td>";
+                      echo "<td><input class='edit' type='text' maxlength='45' name='entity".$row[0]."[]' value='$row[3]'></td>";
+                      echo "<td><input class='edit' type='text' maxlength='10' name='entity".$row[0]."[]' value='$row[4]'></td>";
                       echo "</tr>";
                     }
                     ?>
                     <tr>
                       <td></td>
                       <td class=td_input>
-                        <input class='input' type='number' max='99999999999' name='idcriteria'>
+                        <input class='input'  maxlength='11' type='text' name='idcriteria'>
                       </td>
                       <td class=td_input>
                         <input class='input' type='number' step='any' name='value1'>
@@ -133,9 +148,9 @@
                     <tr>
                       <td colspan="6">
                         <br>
-                        <input type="submit" class="btn btn-primary" name="CriteriaAdd" value="Add">
-                        <input type="submit" class="btn btn-warning" name="CriteriaEdit" value="Edit">
-                        <input type="submit" class="btn btn-danger" name="CriteriaDelete" value="Delete">
+                        <input type="submit" class="btn btn-primary" name="CriteriaAdd" value="추가">
+                        <input type="submit" class="btn btn-warning" name="CriteriaEdit" value="수정">
+                        <input type="submit" class="btn btn-danger" name="CriteriaDelete" value="삭제">
                       </td>
                     </tr>
                   </tbody>

@@ -18,13 +18,14 @@
       outline: none;
       padding: 0px 0px 0px 0px;
       text-align : center;
-      width:100px;
+      width:80%;
     }
+
     .edit
     {
       border:none;
-      width:100px;
       border-top:0px;
+      width:100%;
       background-color: inherit;
       text-align: center;
     }
@@ -49,6 +50,16 @@
     margin: -20px;
     padding:15px;
     margin-bottom: 10px;
+  }
+
+  table {
+    table-layout:fixed;
+  }
+
+  table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
     ul {

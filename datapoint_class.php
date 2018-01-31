@@ -42,7 +42,7 @@
           $stmt->execute(array(':id'=>$id,':timestamp'=>$timestamp,':value'=>$value,':flag'=>$flag,':idstation'=>$idstation,':idcriteria'=>$idcriteria));
           return true;
         }
-        else {
+      else {
           return false;
         }
       }
@@ -59,11 +59,13 @@
       {
         if((!$this->whetherExist($newId) || $prevId==$newId) && $this->particularExist($idstation,"station") && $this->particularExist($idcriteria,"criteria"))
         {
-          $stmt = $this->db->prepare("UPDATE datapoint SET iddatapoint=:iddatapoint, `timestamp`=:timestamp, value=:value, idstation=:idstation, idcriteria=:idcriteria WHERE iddatapoint=:prevId");
+          $flag=$this->calculateFlag($value,$idcriteria);
+          $stmt = $this->db->prepare("UPDATE datapoint SET iddatapoint=:iddatapoint, `timestamp`=:timestamp, value=:value, flag=:flag, idstation=:idstation, idcriteria=:idcriteria WHERE iddatapoint=:prevId");
           $stmt->bindparam(":iddatapoint",$newId);
           $stmt->bindparam(":prevId",$prevId);
           $stmt->bindparam(":timestamp",$timestamp);
           $stmt->bindparam(":value",$value);
+          $stmt->bindparam(":flag",$flag);
           $stmt->bindparam(":idstation",$idstation);
           $stmt->bindparam(":idcriteria",$idcriteria);
           $stmt->execute();
@@ -78,22 +80,6 @@
         echo $e->getMessage();
       }
     }
-
-    //해당 ID의 entity 삭제
-    public function delete($id)
-    {
-      try
-      {
-        $stmt = $this->db->prepare("DELETE FROM datapoint WHERE iddatapoint=:id");
-        $stmt->bindparam(":id",$id);
-        $stmt->execute();
-      }
-      catch(PDOException $e)
-      {
-        echo $e->getMessage();
-      }
-    }
-
   }
 
  ?>
